@@ -162,6 +162,7 @@ void add_queue(char* cmdline){
         history_size++;
     }
 }
+
 /*
  * print_queue: prints the list of command-line commands in FIFO order
  *     i, j: integers used to parse through the queue of command history and
