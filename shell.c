@@ -10,18 +10,17 @@
 #include <sys/wait.h>
 #include <ctype.h>
 
-#define HIST 10
 #define MAXLENGTH 1024
 #define MAXARGS 128
 
 // used to store history information about past commands
-struct history_t {
-  char command[MAXLENGTH];  // the command line from a past command
+struct command {
+  char input[MAXLENGTH];  // the command line from a past command
   unsigned int id;  // unique ID of the command
 };
 
-static struct history_t history[10]; //history: a circular list of the most 10 recent command input strings
-static int history_next=0; //index for next element added to queue
+static struct command history[10]; //history: a circular list of the most 10 recent command input strings
+static int next_index=0; //index for next element added to queue
 static int history_size=0; //number of elements in queue
 static unsigned int command_id = 0; //id to be assigned to next element added to queue
 static char cmdline_copy[MAXLENGTH]; //copy of command line for use in parsing function
@@ -36,13 +35,13 @@ int parse_cmd(const char *cmdline, char *argv[], int *bg);
 
 int main( ){
 
-  char cmdline[MAXLENGTH];
-  char *argv[MAXARGS]; 
-  //char** argv;
-  int bg;
   int pid;
   int status;
   int num, i, found;
+  char cmdline[MAXLENGTH];
+  char *argv[MAXARGS];
+  //char** argv;
+  int bg;
 
   signal(SIGCHLD, child_handler);
 
@@ -69,7 +68,7 @@ int main( ){
       found = 0;
       for(i = 0; i < history_size && found == 0; i++){
         if(history[i].id == num){
-          strcpy(cmdline, history[i].command);
+          strcpy(cmdline, history[i].input);
           parse_cmd(cmdline, argv, &bg);
           //argv = parse_cmd_dynamic(cmdline, &bg);
           found = 1;
@@ -130,11 +129,11 @@ void child_handler(int sig){
  *    cmdline: the most recently entered command on the command line
  */
 void add_queue(char* cmdline){
-  strcpy(history[history_next].command, cmdline);
-  history[history_next].id = command_id;
+  strcpy(history[next_index].input, cmdline);
+  history[next_index].id = command_id;
   command_id++;
 
-  history_next = (history_next+1)%10;
+  next_index = (next_index+1)%10;
 
   if(history_size < 10){
     history_size++;
@@ -153,11 +152,11 @@ void print_queue(){
     i = 0;
   }
   else{
-    i = history_next;
+    i = next_index;
   }
   for(j = 0; j < history_size; j++)
   {
-    printf("%d  %s", history[(i + j)%10].id, history[(i + j)%10].command);
+    printf("%d  %s", history[(i + j)%10].id, history[(i + j)%10].input);
   }
 }
 
