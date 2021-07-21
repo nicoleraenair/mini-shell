@@ -1,3 +1,5 @@
+# mini-shell
+
 A mini Unix shell program.
 
 Functionality includes:
