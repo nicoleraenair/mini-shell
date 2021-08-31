@@ -13,5 +13,5 @@ Functionality includes:
  
 Implements circular queue and related functions to store command history and dynamically allocates argument list.
 
-To Compile: gcc -o shell shell.c
+To Compile: gcc -o shell shell.c\
 To Run: ./shell
